@@ -28,20 +28,18 @@ jobs:
         run: flutter build linux --release
         working-directory: codiaq_app
       - name: Archive Release
-        working-directory: codiaq_app
         uses: thedoctor0/zip-release@master
         with:
           type: 'zip'
           filename: codiaq-${{github.ref_name}}-linux.zip
           directory: build/linux/x64/release/bundle
       - name: Linux Release
-        working-directory: codiaq_app
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: build/linux/x64/release/bundle/codiaq-${{github.ref_name}}-linux.zip
+          files: codiaq_app/build/linux/x64/release/bundle/codiaq-${{github.ref_name}}-linux.zip
 
   build-and-release-windows:
     runs-on: windows-latest
