@@ -102,7 +102,7 @@ flutter:
           style: italic
         - asset: assets/fonts/JetBrainsMonoNL-Light.ttf
           weight: 300
-        - asset: assets/fonts/JetBrainsMonoNL-Lightitalic.ttf
+        - asset: assets/fonts/JetBrainsMonoNL-LightItalic.ttf
           weight: 300
           style: italic
         - asset: assets/fonts/JetBrainsMonoNL-ExtraLight.ttf
