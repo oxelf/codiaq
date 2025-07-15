@@ -1,5 +1,3 @@
-import 'package:codiaq_editor/src/buffer/buffer.dart';
-
 import '../../codiaq_editor.dart';
 
 class Breakpoint {

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:watcher/watcher.dart';
 
 import 'fs_provider.dart';
@@ -121,13 +122,22 @@ class LocalFSProvider extends FSProvider {
 
   @override
   Stream<FsEvent> watch(String path, {bool recursive = false}) {
-    final controller = StreamController<FsEvent>(
-      onCancel: () {
-        // Cleanup will be handled by individual watchers
-      },
-    );
+    final controller = StreamController<FsEvent>();
 
-    // Check if the path exists and is a directory
+    void emitEvent(FileSystemEvent event) {
+      late FsEventType type;
+      if (event is FileSystemCreateEvent) {
+        type = FsEventType.created;
+      } else if (event is FileSystemDeleteEvent) {
+        type = FsEventType.deleted;
+      } else if (event is FileSystemModifyEvent) {
+        type = FsEventType.modified;
+      } else {
+        type = FsEventType.modified;
+      }
+      controller.add(FsEvent(type, event.path));
+    }
+
     if (!Directory(path).existsSync()) {
       controller.addError(
         FileSystemException('Directory does not exist', path),
@@ -136,32 +146,55 @@ class LocalFSProvider extends FSProvider {
       return controller.stream;
     }
 
-    // Watch the given directory
-    final watcher = DirectoryWatcher(path);
-    watcher.events.listen(
-      (event) {
-        controller.add(
-          FsEvent(_mapChangeTypeToFsEventType(event.type), event.path),
-        );
-      },
-      onError: (error) => controller.addError(error),
-      onDone: () => controller.close(),
-    );
+    if (Platform.isIOS) {
+      // Use watcher package (DirectoryWatcher) on iOS
+      final mainWatcher = DirectoryWatcher(path);
+      final subs = <StreamSubscription>[];
 
-    // Handle recursive watching
-    if (recursive) {
-      Directory(path).list(recursive: true, followLinks: false).listen((
-        entity,
-      ) async {
-        if (await FileSystemEntity.isDirectory(entity.path)) {
-          final subWatcher = DirectoryWatcher(entity.path);
-          subWatcher.events.listen((event) {
+      subs.add(
+        mainWatcher.events.listen(
+          (event) {
             controller.add(
               FsEvent(_mapChangeTypeToFsEventType(event.type), event.path),
             );
-          }, onError: (error) => controller.addError(error));
+          },
+          onError: controller.addError,
+          onDone: controller.close,
+        ),
+      );
+
+      if (recursive) {
+        Directory(path).list(recursive: true, followLinks: false).listen((
+          entity,
+        ) async {
+          if (await FileSystemEntity.isDirectory(entity.path)) {
+            final subWatcher = DirectoryWatcher(entity.path);
+            subs.add(
+              subWatcher.events.listen((event) {
+                controller.add(
+                  FsEvent(_mapChangeTypeToFsEventType(event.type), event.path),
+                );
+              }, onError: controller.addError),
+            );
+          }
+        }, onError: controller.addError);
+      }
+
+      controller.onCancel = () {
+        for (var sub in subs) {
+          sub.cancel();
         }
-      }, onError: (error) => controller.addError(error));
+      };
+    } else {
+      // Use native Directory.watch on non-iOS platforms
+      final stream = Directory(path).watch(recursive: recursive);
+      final sub = stream.listen(
+        emitEvent,
+        onError: controller.addError,
+        onDone: controller.close,
+      );
+
+      controller.onCancel = () => sub.cancel();
     }
 
     return controller.stream;

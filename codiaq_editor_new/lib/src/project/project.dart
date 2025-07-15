@@ -105,7 +105,6 @@ class Project {
     });
     if (fsProvider.existsSync("$rootPath/README.md")) {
       await openBuffer("$rootPath/README.md");
-      openBuffer("$rootPath/example/lib/main.dart", focus: false);
     } else {
       print("No README.md found in $rootPath");
     }

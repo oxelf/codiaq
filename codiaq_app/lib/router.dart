@@ -50,6 +50,61 @@ final router = GoRouter(
           theme: theme,
         );
 
+        project.keymapManager.registerAllShortcuts(macosDefaultKeymap);
+        project.highlightGroups.registerMany(intellijDarkHgroups);
+
+        Future<void> addLsp() async {
+          StdioLspClient client = StdioLspClient(
+            serverId: "dart_lsp",
+            command: "dart",
+            args: ["language-server"],
+          );
+          client.start();
+          Future.delayed(Duration(milliseconds: 1000), () async {
+            client.initialize(
+              rootUri: Uri.file(project.rootPath).toString(),
+              capabilities: {
+                "textDocument": {
+                  "hover": {"dynamicRegistration": true},
+                  "completion": {"dynamicRegistration": true},
+                  "definition": {"dynamicRegistration": true},
+                  "references": {"dynamicRegistration": true},
+                  "documentSymbol": {"dynamicRegistration": true},
+                  "codeAction": {
+                    "codeActionLiteralSupport": {
+                      "codeActionKind": {
+                        "valueSet": [
+                          "",
+                          "quickfix",
+                          "refactor",
+                          "refactor.extract",
+                          "refactor.inline",
+                          "refactor.rewrite",
+                          "source",
+                          "source.organizeImports",
+                        ],
+                      },
+                    },
+                  },
+                },
+                "workspace": {
+                  "applyEdit": true,
+                  "workspaceEdit": {"documentChanges": true},
+                },
+              },
+              pid: 123,
+            );
+            await Future.delayed(Duration(milliseconds: 1000));
+
+            project.addLspClient(client);
+            print("Initialized LSP client: ${client.serverId}");
+            //client.attach(buffer);
+            //buffer.lsp.registerClient(client);
+          });
+        }
+
+        addLsp();
+
         return Scaffold(body: ProjectIDE(project: project));
       },
     ),

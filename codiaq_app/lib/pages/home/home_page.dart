@@ -1,4 +1,6 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:codiaq_app/data/recent_projects.dart';
+import 'package:codiaq_app/main.dart';
 import 'package:codiaq_editor/codiaq_editor.dart';
 import 'package:codiaq_ui/codiaq_ui.dart';
 import 'package:file_picker/file_picker.dart';
@@ -13,9 +15,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String? filter;
   @override
   Widget build(BuildContext context) {
     var theme = EditorThemeProvider.of(context);
+    var cqTheme = CQTheme.of(context);
+    var recents = getRecentProjects();
     return Scaffold(
       backgroundColor: theme.backgroundColor,
       body: Column(
@@ -45,31 +50,40 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  constraints: BoxConstraints(maxWidth: 400),
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: InputField(
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: theme.iconTheme.color,
+                Expanded(
+                  child: Container(
+                    constraints: BoxConstraints(maxWidth: 400, minWidth: 100),
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: InputField(
+                        onChanged: (value) {
+                          setState(() {
+                            filter = value.isEmpty ? null : value;
+                          });
+                        },
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: theme.iconTheme.color,
+                        ),
                       ),
                     ),
                   ),
                 ),
-                Row(
-                  spacing: 8,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    CQButton.secondary(label: "New Project"),
-                    CQButton.secondary(
-                      label: "Open",
-                      onPressed: () {
-                        pickProject();
-                      },
-                    ),
-                    CQButton.secondary(label: "Get from VCS"),
-                  ],
+                Expanded(
+                  child: Row(
+                    spacing: 8,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      CQButton.secondary(label: "New Project"),
+                      CQButton.secondary(
+                        label: "Open",
+                        onPressed: () {
+                          pickProject();
+                        },
+                      ),
+                      CQButton.secondary(label: "Get from VCS"),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -78,7 +92,72 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Divider(color: theme.dividerColor, height: 1.5),
           ),
+          SizedBox(height: 16),
+          FutureBuilder<List<RecentProject>>(
+            future: recents,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text("Error loading recent projects"));
+              } else if (snapshot.data!.isEmpty) {
+                return Center(child: Text("No recent projects found"));
+              } else {
+                return _buildRecentProjects(cqTheme, snapshot.data!);
+              }
+            },
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildRecentProjects(
+    CQThemeData theme,
+    List<RecentProject> inputProjects,
+  ) {
+    var projects = inputProjects.where((p) {
+      if (filter == null || filter!.isEmpty) return true;
+      return p.name.toLowerCase().contains(filter!.toLowerCase()) ||
+          p.rootPath.toLowerCase().contains(filter!.toLowerCase());
+    }).toList();
+    return Expanded(
+      child: ListView.builder(
+        itemCount: projects.length,
+        itemBuilder: (context, index) {
+          var project = projects[index];
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: ListTile(
+              focusColor: theme.inputTheme.focusedBorderColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
+              minTileHeight: 20,
+              hoverColor: theme.inputTheme.focusedBorderColor,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 8.0,
+                vertical: 4.0,
+              ),
+              minVerticalPadding: 0,
+              title: Text(
+                project.name,
+                style: TextStyle(color: theme.textStyle.color, fontSize: 14),
+              ),
+              subtitle: Text(
+                project.rootPath,
+                style: TextStyle(color: theme.textStyle.color, fontSize: 12),
+              ),
+              onTap: () {
+                appWindow.size = editorSize;
+                context.go(
+                  "/project?path=${project.rootPath}",
+                  extra: project.rootPath,
+                );
+              },
+            ),
+          );
+        },
       ),
     );
   }
@@ -91,6 +170,11 @@ class _HomePageState extends State<HomePage> {
             print("No project selected");
             return;
           }
+          addToRecentProjects(
+            RecentProject(name: result.split('/').last, rootPath: result),
+          );
+
+          appWindow.size = editorSize;
           context.go("/project?path=$result", extra: result);
         })
         .catchError((error) {

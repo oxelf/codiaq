@@ -8,6 +8,9 @@ import 'package:codiaq_ui/codiaq_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+const homeSize = Size(800, 650);
+const editorSize = Size(1400, 1000);
+
 var editorTheme = cq.EditorTheme(
   // intellij background color
   backgroundColor: Color(0xFF1E1F22),
@@ -27,12 +30,18 @@ var editorTheme = cq.EditorTheme(
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  Timer.periodic(Duration(seconds: 1), (timer) {
+    print("window size: ${appWindow.size}");
+  });
   if (!kIsWeb && !Platform.isAndroid && !Platform.isIOS) {
     doWhenWindowReady(() {
-      const initialSize = Size(1080, 720);
-      const minSize = Size(600, 800);
+      //const minSize = Size(600, 800);
       //appWindow.minSize = minSize;
-      //appWindow.size = initialSize;
+      appWindow.size = homeSize;
+      print("App window size: ${appWindow.size}");
+      print("app window position: ${appWindow.position}");
+      print("app window alignment: ${appWindow.alignment}");
+      print("app window is maximized: ${appWindow.rect}");
       appWindow.alignment = Alignment.center;
       appWindow.show();
     });
