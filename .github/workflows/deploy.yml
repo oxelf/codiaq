@@ -88,13 +88,17 @@ jobs:
         shell: pwsh
         run: |
           flutter_distributor package --platform windows --targets exe
+      - name: Rename file to windows.exe
+        shell: pwsh
+        run: |
+          Rename-Item -Path "dist/${{ env.VERSION }}/codiaq-${{ env.VERSION }}-windows-setup.exe" -NewName "windows.exe"
       - name: Publish Windows Release using flutter_distributor
         working-directory: codiaq_app
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
         run: |
-          flutter_distributor publish --path dist/${{ env.VERSION }}/codiaq-${{ env.VERSION }}+${{ env.VERSION }}-windows-setup.exe --targets github --github-repo-owner 'oxelf' --github-repo-name 'codiaq'
+          flutter_distributor publish --path dist/${{ env.VERSION }}/windows.exe --targets github --github-repo-owner 'oxelf' --github-repo-name 'codiaq'
 
   build-and-release-macos:
     name: Build and Release macOS App
@@ -145,6 +149,9 @@ jobs:
         run: |
           export PATH="$PATH:$HOME/.pub-cache/bin"
           flutter_distributor package --platform macos --targets dmg
+      - name: Rename dmg
+        working-directory: codiaq_app
+        run: cp dist/${{ env.VERSION }}/codiaq_app-${{ env.VERSION }}-macos.dmg dist/${{ env.VERSION }}/macos.dmg
 
       - name: Publish to GitHub Releases using flutter_distributor
         working-directory: codiaq_app
@@ -153,7 +160,7 @@ jobs:
         run: |
           export PATH="$PATH:$HOME/.pub-cache/bin"
           flutter_distributor publish \
-            --path dist/${{ env.VERSION }}/codiaq_app-${{ env.VERSION }}-macos.dmg \
+            --path dist/${{ env.VERSION }}/macos.dmg \
             --targets github \
             --github-repo-owner 'oxelf' \
             --github-repo-name 'codiaq'
