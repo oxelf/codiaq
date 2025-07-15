@@ -144,7 +144,7 @@ jobs:
         working-directory: codiaq_app
         run: |
           export PATH="$PATH:$HOME/.pub-cache/bin"
-          flutter_distributor package --platform macos --targets dmg --no-tree-shake-icons
+          flutter_distributor package --platform macos --targets dmg
 
       - name: Publish to GitHub Releases using flutter_distributor
         working-directory: codiaq_app
