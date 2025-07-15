@@ -2,25 +2,73 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:codiaq_app/router.dart';
 import 'package:codiaq_editor/codiaq_editor.dart' as cq;
+import 'package:codiaq_ui/codiaq_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
+var editorTheme = cq.EditorTheme(
+  // intellij background color
+  backgroundColor: Color(0xFF1E1F22),
+  //baseStyle: const TextStyle(
+  //  color: Colors.white,
+  //  fontFamily: 'JetBrainsMono',
+  //  package: "codiaq_editor",
+  //  fontSize: 20,
+  //),
+  dividerColor: Color.fromARGB(255, 57, 59, 64),
+  popupBackgroundColor: Color(0xFF2B2D30),
+  showBreakpoints: true,
+  relativeLineNumbers: false,
+  cursorColor: Colors.white70,
+  selectionColor: Colors.blue.withOpacity(0.3),
+);
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  if (!Platform.isAndroid && !Platform.isIOS) {
+  if (!kIsWeb && !Platform.isAndroid && !Platform.isIOS) {
     doWhenWindowReady(() {
       const initialSize = Size(1080, 720);
       const minSize = Size(600, 800);
-      appWindow.minSize = minSize;
-      appWindow.size = initialSize;
+      //appWindow.minSize = minSize;
+      //appWindow.size = initialSize;
       appWindow.alignment = Alignment.center;
       appWindow.show();
     });
   }
   try {
-    runApp(const MainApp());
+    runApp(const CodiaqMainApp());
   } catch (e) {
     print('Error in main: $e');
+  }
+}
+
+class CodiaqMainApp extends StatefulWidget {
+  const CodiaqMainApp({super.key});
+
+  @override
+  State<CodiaqMainApp> createState() => _CodiaqMainAppState();
+}
+
+class _CodiaqMainAppState extends State<CodiaqMainApp> {
+  @override
+  Widget build(BuildContext context) {
+    return CQTheme(
+      theme: CQThemeData(),
+      child: cq.EditorThemeProvider(
+        theme: editorTheme,
+        child: MaterialApp.router(
+          debugShowCheckedModeBanner: false,
+          //title: 'Codiaq Editor Example',
+          //theme: ThemeData(
+          //  primarySwatch: Colors.blue,
+          //  visualDensity: VisualDensity.adaptivePlatformDensity,
+          //),
+          routerConfig: router,
+        ),
+      ),
+    );
   }
 }
 
@@ -32,27 +80,10 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  var theme = cq.EditorTheme(
-    // intellij background color
-    backgroundColor: Color(0xFF1E1F22),
-    //baseStyle: const TextStyle(
-    //  color: Colors.white,
-    //  fontFamily: 'JetBrainsMono',
-    //  package: "codiaq_editor",
-    //  fontSize: 20,
-    //),
-    dividerColor: Color.fromARGB(255, 57, 59, 64),
-    popupBackgroundColor: Color(0xFF2B2D30),
-    showBreakpoints: true,
-    relativeLineNumbers: false,
-    cursorColor: Colors.white70,
-    selectionColor: Colors.blue.withOpacity(0.3),
-  );
-
   late cq.Project project = cq.Project(
     name: "Codiaq Editor Example",
     rootPath: "/Users/joscha/Documents/dev/codiaq_editor_new",
-    theme: theme,
+    theme: editorTheme,
   );
 
   @override
@@ -120,7 +151,7 @@ class _MainAppState extends State<MainApp> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: cq.EditorThemeProvider(
-          theme: theme,
+          theme: editorTheme,
           child: cq.ProjectIDE(project: project),
         ),
       ),

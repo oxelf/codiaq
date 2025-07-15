@@ -19,6 +19,8 @@ dependencies:
   path_provider: ^2.1.5
   bitsdojo_window: ^0.1.6
   material_design_icons_flutter: ^7.0.7296
+  reorderable_tabbar:
+    path: ../reorderable_tabbar
 
 dev_dependencies:
   flutter_test:

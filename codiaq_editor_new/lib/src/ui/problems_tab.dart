@@ -1,4 +1,6 @@
+import 'package:codiaq_editor/codiaq_editor.dart';
 import 'package:codiaq_editor/src/icons/seti.dart';
+import 'package:codiaq_editor/src/theme/theme.dart';
 import 'package:flutter/material.dart';
 
 import '../buffer/diagnostic.dart';
@@ -35,11 +37,15 @@ class ProblemsTabWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = EditorThemeProvider.of(context);
     if (diagnostics == null || diagnostics!.isEmpty) {
-      return const Center(child: Text("No problems found."));
+      return Center(
+        child: Text(
+          "No problems found.",
+          style: TextStyle(color: theme.baseStyle.color),
+        ),
+      );
     }
-
-    final theme = Theme.of(context);
 
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 8),

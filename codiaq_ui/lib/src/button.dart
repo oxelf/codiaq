@@ -1,5 +1,6 @@
+import 'package:flutter/material.dart';
+
 import 'theme.dart';
-import 'package:flutter/widgets.dart';
 
 class CQButton extends StatefulWidget {
   final String label;
@@ -49,7 +50,7 @@ class _CQButtonState extends State<CQButton> {
 
     Color backgroundColor = theme.buttonStyle.primaryBackgroundColor;
     if (widget.secondary || widget.disabled) {
-      backgroundColor = theme.backgroundColor;
+      backgroundColor = Colors.transparent;
     }
     Color borderColor = _hasFocus
         ? effectiveStyle.focusedBorderColor
@@ -69,6 +70,9 @@ class _CQButtonState extends State<CQButton> {
         });
       },
       child: MouseRegion(
+        cursor: widget.disabled
+            ? SystemMouseCursors.forbidden
+            : SystemMouseCursors.click,
         onEnter: (_) => setState(() => _isHovered = true),
         onExit: (_) => setState(() => _isHovered = false),
         child: GestureDetector(

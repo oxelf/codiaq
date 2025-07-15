@@ -12,7 +12,10 @@ dependencies:
   bitsdojo_window: ^0.1.6
   codiaq_editor:
     path: ../codiaq_editor_new/
+  codiaq_ui:
+    path: ../codiaq_ui/
   go_router: ^16.0.0
+  file_picker: ^10.2.0
 
 dev_dependencies:
   flutter_test:

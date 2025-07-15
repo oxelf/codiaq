@@ -14,12 +14,14 @@ class ToolWindowWrapper extends StatefulWidget {
   final ToolWindowManager toolWindowManager;
   final Widget child;
   final EditorTheme theme;
+  final Project project;
 
   const ToolWindowWrapper({
     super.key,
     required this.toolWindowManager,
     required this.child,
     required this.theme,
+    required this.project,
   });
 
   @override

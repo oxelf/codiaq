@@ -5,6 +5,7 @@ import 'package:codiaq_editor/codiaq_editor.dart';
 import 'package:codiaq_editor/src/actions/action_manager.dart';
 import 'package:codiaq_editor/src/actions/keymap_manager.dart';
 import 'package:codiaq_editor/src/executor/shell_manager.dart';
+import 'package:codiaq_editor/src/project/buffer_list.dart';
 import 'package:codiaq_editor/src/project/diagnostics.dart';
 import 'package:codiaq_editor/src/settings/settings.dart';
 import 'package:codiaq_editor/src/ui/terminal_tabs.dart';
@@ -17,7 +18,8 @@ import '../window/cursor.dart';
 class Project {
   final String name;
   final String rootPath;
-  final List<Buffer> buffers = [];
+  final BufferListNotifier buffers = BufferListNotifier();
+
   ToolWindowManager toolWindowManager = ToolWindowManager();
   final EditorTheme theme;
   final List<LspClient> lspClients = [];
@@ -275,7 +277,8 @@ class Project {
         this.diagnostics.replaceDiagnostics(uri, diags);
       }
     });
-    for (var buffer in buffers) {
+    for (int i = 0; i < buffers.length; i++) {
+      var buffer = buffers[i];
       client.attach(buffer);
       buffer.lsp.registerClient(client);
     }
@@ -314,5 +317,31 @@ class Project {
       gotoColumn = cursor.column;
     }
     buffer.viewport.revealPos(gotoLine, gotoColumn);
+  }
+
+  void closeBufferIndex(int index) {
+    if (index < 0 || index >= buffers.length) {
+      print("Invalid buffer index: $index");
+      return;
+    }
+    var buffer = buffers[index];
+    closeBuffer(buffer);
+    if (currentBuffer.value >= buffers.length) {
+      currentBuffer.value = buffers.length - 1;
+    }
+    print("Closed buffer at index: $index, path: ${buffer.path}");
+  }
+
+  void reorderBuffers(int oldIndex, int newIndex) {
+    if (oldIndex < 0 ||
+        oldIndex >= buffers.length ||
+        newIndex < 0 ||
+        newIndex >= buffers.length) {
+      print("Invalid buffer index: oldIndex=$oldIndex, newIndex=$newIndex");
+      return;
+    }
+    var buffer = buffers.removeAt(oldIndex);
+    buffers.insert(newIndex, buffer);
+    print("Reordered buffer from $oldIndex to $newIndex: ${buffer.path}");
   }
 }
