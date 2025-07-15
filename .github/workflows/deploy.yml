@@ -34,13 +34,15 @@ jobs:
           filename: codiaq-${{github.ref_name}}-linux.zip
           directory: codiaq_app/build/linux/x64/release/bundle
           path: codiaq_app
+      - name: Rename zip
+        run: cp codiaq_app/build/linux/x64/release/bundle/codiaq-${{github.ref_name}}-linux.zip codiaq_app/build/linux/x64/release/bundle/linux.zip
       - name: Linux Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: codiaq_app/build/linux/x64/release/bundle/codiaq-${{github.ref_name}}-linux.zip
+          files: codiaq_app/build/linux/x64/release/bundle/linux.zip
 
   build-and-release-windows:
     runs-on: windows-latest
@@ -91,7 +93,7 @@ jobs:
       - name: Rename file to windows.exe
         shell: pwsh
         run: |
-          Rename-Item -Path "dist/${{ env.VERSION }}/codiaq-${{ env.VERSION }}-windows-setup.exe" -NewName "windows.exe"
+          Rename-Item -Path "codiaq_app/dist/${{ env.VERSION }}/codiaq_app-${{ env.VERSION }}-windows-setup.exe" -NewName "windows.exe"
       - name: Publish Windows Release using flutter_distributor
         working-directory: codiaq_app
         env:
