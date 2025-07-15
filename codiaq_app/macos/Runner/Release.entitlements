@@ -3,5 +3,7 @@
 <plist version="1.0">
   <key>com.apple.security.files.user-selected.read-write</key>
   <true/>
+  <key>com.apple.security.app-sandbox</key>
+  <false/>
 <dict/>
 </plist>
