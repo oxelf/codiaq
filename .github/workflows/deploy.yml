@@ -153,7 +153,7 @@ jobs:
         run: |
           export PATH="$PATH:$HOME/.pub-cache/bin"
           flutter_distributor publish \
-            --path dist/${{ env.VERSION }}/codiaq_app-${{ env.VERSION }}+${{ env.VERSION }}-macos.dmg \
+            --path dist/${{ env.VERSION }}/codiaq_app-${{ env.VERSION }}-macos.dmg \
             --targets github \
             --github-repo-owner 'oxelf' \
             --github-repo-name 'codiaq'
