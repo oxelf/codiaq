@@ -13,11 +13,7 @@ Widget getSetiIcon(
   final meta = iconSetMap[ext];
 
   if (meta != null) {
-    return Icon(
-      IconData(meta.codePoint, fontFamily: fontFamily),
-      color: Color(meta.color),
-      size: size,
-    );
+    return Icon(meta.iconData, color: Color(meta.color), size: size);
   }
 
   // fallback

@@ -1,5 +1,7 @@
+import 'package:flutter/material.dart';
+
 class SetiMeta {
-  final int codePoint;
+  final IconData iconData;
   final int color;
-  const SetiMeta(this.codePoint, this.color);
+  const SetiMeta(this.iconData, this.color);
 }
