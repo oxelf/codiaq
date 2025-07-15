@@ -32,7 +32,8 @@ jobs:
         with:
           type: 'zip'
           filename: codiaq-${{github.ref_name}}-linux.zip
-          directory: build/linux/x64/release/bundle
+          directory: codiaq_app/build/linux/x64/release/bundle
+          path: codiaq_app
       - name: Linux Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
@@ -143,7 +144,7 @@ jobs:
         working-directory: codiaq_app
         run: |
           export PATH="$PATH:$HOME/.pub-cache/bin"
-          flutter_distributor package --platform macos --targets dmg
+          flutter_distributor package --platform macos --targets dmg --no-tree-shake-icons
 
       - name: Publish to GitHub Releases using flutter_distributor
         working-directory: codiaq_app

@@ -1,0 +1,9 @@
+app_id: 5B599538-42B2-4826-A479-AF079F21A65B
+publisher: codiaq
+publisher_url: https://github.com/oxelf/codiaq
+display_name: codiaq
+create_desktop_icon: true
+# See: https://jrsoftware.org/ishelp/index.php?topic=setup_defaultdirname
+# install_dir_name: "D:\\HELLO-WORLD"
+locales:
+  - en
