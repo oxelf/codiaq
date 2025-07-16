@@ -132,7 +132,12 @@ class _HomePageState extends State<HomePage> {
                   } else if (snapshot.hasError) {
                     return Center(child: Text("Error loading recent projects"));
                   } else if (snapshot.data!.isEmpty) {
-                    return Center(child: Text("No recent projects found"));
+                    return Center(
+                      child: Text(
+                        "No recent projects found",
+                        style: TextStyle(color: cqTheme.textStyle.color),
+                      ),
+                    );
                   } else {
                     return _buildRecentProjects(cqTheme, snapshot.data!);
                   }
