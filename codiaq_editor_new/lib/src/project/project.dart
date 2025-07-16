@@ -30,7 +30,9 @@ class Project {
   final HighlightGroupManager highlightGroups = HighlightGroupManager();
   ProjectDiagnostics diagnostics = ProjectDiagnostics();
   final ValueNotifier<int> currentBuffer = ValueNotifier<int>(0);
-  final ShellManager shellManager = ShellManager();
+  late final ShellManager shellManager = ShellManager(
+    workingDirectory: rootPath,
+  );
   final KeymapManager keymapManager = KeymapManager();
   final ActionManager actionManager = ActionManager();
 

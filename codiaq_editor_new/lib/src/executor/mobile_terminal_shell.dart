@@ -10,9 +10,12 @@ class MobileTerminalShell implements TerminalShell {
   late final TerminalExecutionConsole _console;
 
   @override
+  String? workingDirectory;
+
+  @override
   Future<void> start() async {
     final handler = MobileProcessHandler(
-      GeneralCommandLine('sh'),
+      GeneralCommandLine('sh', workingDirectory: workingDirectory),
     ); // mock or native shell
     _console = TerminalExecutionConsole(
       handler: handler,

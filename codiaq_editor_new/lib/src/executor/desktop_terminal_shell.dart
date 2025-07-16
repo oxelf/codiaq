@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:xterm/xterm.dart';
 
@@ -7,12 +8,24 @@ import 'terminal_shell.dart';
 import 'package:flutter_pty/flutter_pty.dart';
 
 class DesktopTerminalShell implements TerminalShell {
+  @override
   final Terminal terminal = Terminal();
   late final Pty _pty;
+  @override
+  String? workingDirectory;
 
   @override
   Future<void> start() async {
-    _pty = Pty.start('/bin/zsh'); // or 'zsh', 'cmd.exe', etc.
+    var shell = "/bin/zsh";
+    if (Platform.isWindows) {
+      shell = "cmd.exe";
+    } else if (Platform.isLinux) {
+      shell = "/bin/bash";
+    }
+    _pty = Pty.start(
+      shell,
+      workingDirectory: workingDirectory,
+    ); // or 'zsh', 'cmd.exe', etc.
 
     // Pipe PTY output into the terminal
     _pty.output

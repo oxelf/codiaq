@@ -61,7 +61,7 @@ final router = GoRouter(
           );
           client.start();
           Future.delayed(Duration(milliseconds: 1000), () async {
-            client.initialize(
+            await client.initialize(
               rootUri: Uri.file(project.rootPath).toString(),
               capabilities: {
                 "textDocument": {
@@ -94,16 +94,21 @@ final router = GoRouter(
               },
               pid: 123,
             );
-            await Future.delayed(Duration(milliseconds: 1000));
 
             project.addLspClient(client);
             print("Initialized LSP client: ${client.serverId}");
+            await Future.delayed(Duration(milliseconds: 1000));
+
             //client.attach(buffer);
             //buffer.lsp.registerClient(client);
           });
         }
 
-        addLsp();
+        try {
+          addLsp();
+        } catch (e) {
+          print("Error initializing LSP client: $e");
+        }
 
         return Scaffold(body: ProjectIDE(project: project));
       },

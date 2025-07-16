@@ -69,55 +69,90 @@ class _ToolBarWidgetState extends State<ToolBarWidget> {
 
     final toolbar = Container(
       height: 40,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      //padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
         color: theme.secondaryBackgroundColor,
         border: Border(
           bottom: BorderSide(color: theme.backgroundColor, width: 3),
         ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Stack(
         children: [
-          Row(
-            children: [
-              if (isMacOS) const SizedBox(width: 72),
-
-              if (!isMacOS)
-                IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
-
-              getProjectName(),
-
-              const SizedBox(width: 8),
-              getBranch(),
-              const SizedBox(width: 8),
-            ],
-          ),
-          // Center actions
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children:
-                centerActions.map((action) {
-                  return action.icon != null
-                      ? action.icon!
-                      : Text(action.label ?? '');
-                }).toList(),
-          ),
-          // RunActions
-          // End actions
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children:
-                endActions.map((action) {
-                  return action.icon != null
-                      ? action.icon!
-                      : Text(action.label ?? '');
-                }).toList(),
+          // Background solid color
+          Positioned.fill(
+            child: Container(color: theme.secondaryBackgroundColor),
           ),
 
-          //if (isWindowsOrLinux) const WindowButtonsRight(),
-          //if (!isWindowsOrLinux)
-          //  IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
+          Positioned(
+            left: 80,
+            top: 0,
+            child: Transform.scale(
+              scale: 2.4, // Slightly more spread
+              child: Container(
+                width: 200,
+                height: 200,
+                decoration: const BoxDecoration(
+                  gradient: RadialGradient(
+                    center: Alignment.center,
+                    radius: 0.5,
+                    colors: [Color(0x77C84DFF), Color(0x00000000)],
+                    stops: [0.0, 1.0],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Toolbar content
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    if (isMacOS) const SizedBox(width: 72),
+
+                    if (!isMacOS)
+                      IconButton(
+                        icon: const Icon(Icons.menu),
+                        onPressed: () {},
+                      ),
+
+                    getProjectName(),
+
+                    const SizedBox(width: 8),
+                    getBranch(),
+                    const SizedBox(width: 8),
+                  ],
+                ),
+                // Center actions
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children:
+                      centerActions.map((action) {
+                        return action.icon != null
+                            ? action.icon!
+                            : Text(action.label ?? '');
+                      }).toList(),
+                ),
+                // RunActions
+                // End actions
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children:
+                      endActions.map((action) {
+                        return action.icon != null
+                            ? action.icon!
+                            : Text(action.label ?? '');
+                      }).toList(),
+                ),
+
+                //if (isWindowsOrLinux) const WindowButtonsRight(),
+                //if (!isWindowsOrLinux)
+                //  IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
+              ],
+            ),
+          ),
         ],
       ),
     );

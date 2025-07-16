@@ -7,6 +7,7 @@ import 'mobile_terminal_shell.dart';
 
 abstract class TerminalShell {
   Terminal get terminal;
+  String? workingDirectory;
 
   Future<void> start();
   void dispose();

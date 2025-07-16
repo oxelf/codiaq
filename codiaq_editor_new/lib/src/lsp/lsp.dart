@@ -208,7 +208,7 @@ class StdioLspClient extends LspClient {
   @override
   Future<void> start() async {
     try {
-      _process = await Process.start(command, args);
+      _process = await Process.start(command, args, runInShell: true);
 
       _process!.stdout
           .transform(LspMessageParser())

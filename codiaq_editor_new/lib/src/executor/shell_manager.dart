@@ -7,17 +7,19 @@ class ShellManager extends ChangeNotifier {
   final List<ShellEntry> _shells = [];
   ShellEntry? _activeShell;
   int _nextId = 0;
+  String? workingDirectory;
 
   List<ShellEntry> get shells => List.unmodifiable(_shells);
   ShellEntry? get activeShell => _activeShell;
 
-  ShellManager() {
+  ShellManager({this.workingDirectory}) {
     newShell(name: 'Local');
   }
 
   Future<void> newShell({String? name}) async {
     final shell =
         TerminalShell.platform(); // Replace with your actual shell implementation
+    shell.workingDirectory = workingDirectory;
     await shell.start();
 
     final entry = ShellEntry(

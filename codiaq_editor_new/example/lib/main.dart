@@ -41,7 +41,7 @@ class MainApp extends StatefulWidget {
   State<MainApp> createState() => _MainAppState();
 }
 
-class _MainAppState extends State<MainApp> {
+class _MainAppState extends State<MainApp> {
   var theme = cq.EditorTheme(
     // intellij background color
     backgroundColor: Color(0xFF1E1F22),

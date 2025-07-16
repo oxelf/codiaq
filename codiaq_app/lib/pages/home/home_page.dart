@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:codiaq_app/data/recent_projects.dart';
 import 'package:codiaq_app/main.dart';
 import 'package:codiaq_editor/codiaq_editor.dart';
 import 'package:codiaq_ui/codiaq_ui.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -23,89 +26,119 @@ class _HomePageState extends State<HomePage> {
     var recents = getRecentProjects();
     return Scaffold(
       backgroundColor: theme.backgroundColor,
-      body: Column(
+      body: Stack(
         children: [
-          Container(
-            height: 30,
-            decoration: BoxDecoration(
-              color: theme.secondaryBackgroundColor,
-              border: Border(
-                bottom: BorderSide(color: theme.dividerColor, width: 1),
-              ),
+          ...[
+            _buildRadialGlow(
+              alignment: Alignment.topLeft,
+              color: Color(0xFFE50914), // red
             ),
-            child: MoveWindow(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Welcome to Codiaq!",
-                    style: TextStyle(color: theme.baseStyle.color),
-                  ),
-                ],
-              ),
+            _buildRadialGlow(
+              alignment: Alignment.topRight,
+              color: Color(0xFFFF5E00), // orange
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Container(
-                    constraints: BoxConstraints(maxWidth: 400, minWidth: 100),
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: InputField(
-                        onChanged: (value) {
-                          setState(() {
-                            filter = value.isEmpty ? null : value;
-                          });
-                        },
-                        prefixIcon: Icon(
-                          Icons.search,
-                          color: theme.iconTheme.color,
-                        ),
-                      ),
-                    ),
+            _buildRadialGlow(
+              alignment: Alignment.bottomLeft,
+              color: Color(0xFFB620E0), // purple
+            ),
+            _buildRadialGlow(
+              alignment: Alignment.bottomRight,
+              color: Color(0xFF0075FF), // blue
+            ),
+            _buildRadialGlow(
+              alignment: Alignment.center,
+              color: Color(0xFF0037A0), // deep blue
+              radius: 0.7,
+            ),
+          ],
+          Column(
+            children: [
+              Container(
+                height: 30,
+                decoration: BoxDecoration(
+                  color: theme.secondaryBackgroundColor,
+                  border: Border(
+                    bottom: BorderSide(color: theme.dividerColor, width: 1),
                   ),
                 ),
-                Expanded(
+                child: MoveWindow(
                   child: Row(
-                    spacing: 8,
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CQButton.secondary(label: "New Project"),
-                      CQButton.secondary(
-                        label: "Open",
-                        onPressed: () {
-                          pickProject();
-                        },
+                      Text(
+                        "Welcome to Codiaq!",
+                        style: TextStyle(color: theme.baseStyle.color),
                       ),
-                      CQButton.secondary(label: "Get from VCS"),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Divider(color: theme.dividerColor, height: 1.5),
-          ),
-          SizedBox(height: 16),
-          FutureBuilder<List<RecentProject>>(
-            future: recents,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text("Error loading recent projects"));
-              } else if (snapshot.data!.isEmpty) {
-                return Center(child: Text("No recent projects found"));
-              } else {
-                return _buildRecentProjects(cqTheme, snapshot.data!);
-              }
-            },
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        constraints: BoxConstraints(
+                          maxWidth: 400,
+                          minWidth: 100,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: InputField(
+                            onChanged: (value) {
+                              setState(() {
+                                filter = value.isEmpty ? null : value;
+                              });
+                            },
+                            prefixIcon: Icon(
+                              Icons.search,
+                              color: theme.iconTheme.color,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Row(
+                        spacing: 8,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          CQButton.secondary(label: "New Project"),
+                          CQButton.secondary(
+                            label: "Open",
+                            onPressed: () {
+                              pickProject();
+                            },
+                          ),
+                          CQButton.secondary(label: "Get from VCS"),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Divider(color: theme.dividerColor, height: 1.5),
+              ),
+              SizedBox(height: 16),
+              FutureBuilder<List<RecentProject>>(
+                future: recents,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text("Error loading recent projects"));
+                  } else if (snapshot.data!.isEmpty) {
+                    return Center(child: Text("No recent projects found"));
+                  } else {
+                    return _buildRecentProjects(cqTheme, snapshot.data!);
+                  }
+                },
+              ),
+            ],
           ),
         ],
       ),
@@ -149,7 +182,8 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(color: theme.textStyle.color, fontSize: 12),
               ),
               onTap: () {
-                appWindow.size = editorSize;
+                if (!kIsWeb && !Platform.isIOS && !Platform.isAndroid)
+                  appWindow.size = editorSize;
                 context.go(
                   "/project?path=${project.rootPath}",
                   extra: project.rootPath,
@@ -158,6 +192,28 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildRadialGlow({
+    required Alignment alignment,
+    required Color color,
+    double radius = 0.5,
+  }) {
+    return Align(
+      alignment: alignment,
+      child: Container(
+        width: 400,
+        height: 400,
+        decoration: BoxDecoration(
+          gradient: RadialGradient(
+            center: Alignment.center,
+            radius: radius,
+            colors: [color.withOpacity(0.2), Colors.transparent],
+            stops: [0.0, 1.0],
+          ),
+        ),
       ),
     );
   }
@@ -174,7 +230,8 @@ class _HomePageState extends State<HomePage> {
             RecentProject(name: result.split('/').last, rootPath: result),
           );
 
-          appWindow.size = editorSize;
+          if (!kIsWeb && !Platform.isIOS && !Platform.isAndroid)
+            appWindow.size = editorSize;
           context.go("/project?path=$result", extra: result);
         })
         .catchError((error) {
