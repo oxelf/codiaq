@@ -105,14 +105,14 @@ class _HomePageState extends State<HomePage> {
                         spacing: 8,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          CQButton.secondary(label: "New Project"),
+                          //CQButton.secondary(label: "New Project"),
                           CQButton.secondary(
                             label: "Open",
                             onPressed: () {
                               pickProject();
                             },
                           ),
-                          CQButton.secondary(label: "Get from VCS"),
+                          //CQButton.secondary(label: "Get from VCS"),
                         ],
                       ),
                     ),

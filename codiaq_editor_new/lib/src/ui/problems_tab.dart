@@ -29,10 +29,12 @@ import '../buffer/diagnostic.dart';
 class ProblemsTabWidget extends StatelessWidget {
   final Map<String, List<Diagnostic>>? diagnostics;
   final Function(String, Diagnostic)? onDiagnosticClick;
+  final String? currentBuffer;
   const ProblemsTabWidget({
     super.key,
     required this.diagnostics,
     this.onDiagnosticClick,
+    this.currentBuffer,
   });
 
   @override
@@ -47,10 +49,20 @@ class ProblemsTabWidget extends StatelessWidget {
       );
     }
 
+    // Convert to list of entries and reorder if necessary
+    final entries = diagnostics!.entries.toList();
+    if (currentBuffer != null) {
+      final index = entries.indexWhere((e) => e.key == currentBuffer);
+      if (index != -1) {
+        final current = entries.removeAt(index);
+        entries.insert(0, current);
+      }
+    }
+
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 8),
       children:
-          diagnostics!.entries.map((entry) {
+          entries.map((entry) {
             final filePath = entry.key;
             final fileName = filePath.split(RegExp(r'[\\/]+')).last;
             final problems = entry.value;

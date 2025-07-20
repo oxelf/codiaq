@@ -12,6 +12,7 @@ export "src/ui/window.dart";
 export "src/ui/buffer_widget.dart";
 export "src/ui/theme_provider.dart";
 
+
 export "src/plugins/highlight.dart";
 export "src/plugins/dartpad_analyzer.dart";
 

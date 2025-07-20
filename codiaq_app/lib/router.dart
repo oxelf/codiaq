@@ -23,7 +23,7 @@ final router = GoRouter(
     ),
     GoRoute(
       path: '/project',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         print("state.extra: ${state.extra}");
         var theme = EditorTheme(
           // intellij background color
@@ -110,7 +110,9 @@ final router = GoRouter(
           print("Error initializing LSP client: $e");
         }
 
-        return Scaffold(body: ProjectIDE(project: project));
+        return NoTransitionPage(
+          child: Scaffold(body: ProjectIDE(project: project)),
+        );
       },
     ),
   ],

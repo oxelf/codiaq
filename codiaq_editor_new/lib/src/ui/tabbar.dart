@@ -78,6 +78,7 @@ class _TabBarWidgetState extends State<TabBarWidget>
               indicatorColor: Colors.blue,
             ),
             child: ReorderableTabBar(
+              labelPadding: EdgeInsets.symmetric(horizontal: 4),
               buildDefaultDragHandles: false,
               onReorder: widget.onTabReordered,
               controller: _tabController,

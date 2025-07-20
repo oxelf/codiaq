@@ -104,6 +104,13 @@ packages:
       relative: true
     source: path
     version: "0.0.1"
+  codiaq_lsp:
+    dependency: transitive
+    description:
+      path: "../../codiaq_lsp"
+      relative: true
+    source: path
+    version: "0.0.1"
   collection:
     dependency: transitive
     description:
@@ -628,5 +635,5 @@ packages:
     source: hosted
     version: "0.0.6"
 sdks:
-  dart: ">=3.8.0 <4.0.0"
+  dart: ">=3.8.1 <4.0.0"
   flutter: ">=3.27.0"

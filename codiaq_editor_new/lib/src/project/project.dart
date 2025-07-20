@@ -142,39 +142,50 @@ class Project {
           child: ListenableBuilder(
             listenable: diagnostics,
             builder: (context, _) {
-              return ProblemsTabWidget(
-                diagnostics: diagnostics.allDiagnostics,
-                onDiagnosticClick: (path, diagnostic) {
-                  // Handle diagnostic click, e.g., open file at line
-                  print(
-                    "Clicked diagnostic in $path at line ${diagnostic.line}",
+              return ValueListenableBuilder(
+                valueListenable: currentBuffer,
+                builder: (context, _, _) {
+                  return ProblemsTabWidget(
+                    currentBuffer:
+                        buffers.isNotEmpty &&
+                                currentBuffer.value < buffers.length &&
+                                currentBuffer.value >= 0
+                            ? buffers[currentBuffer.value].path
+                            : null,
+                    diagnostics: diagnostics.allDiagnostics,
+                    onDiagnosticClick: (path, diagnostic) {
+                      // Handle diagnostic click, e.g., open file at line
+                      print(
+                        "Clicked diagnostic in $path at line ${diagnostic.line}",
+                      );
+                      String sanitizedPath = path.substring(7);
+                      openBuffer(sanitizedPath);
+                      buffers.forEach((b) {
+                        print("Buffer path: ${b.path}");
+                      });
+                      print("Sanitized path: $sanitizedPath");
+                      var buffer = buffers.firstWhere(
+                        (b) => b.path == sanitizedPath,
+                        orElse:
+                            () => Buffer(
+                              theme: theme,
+                              filetype: "unknown",
+                              initialLines: [],
+                              hgMgr: highlightGroups,
+                            ),
+                      );
+                      print("Buffer found: ${buffer.path}");
+                      buffer.viewport.revealPos(
+                        diagnostic.line,
+                        diagnostic.startCol,
+                      );
+                      buffer.setCursorPosition(
+                        diagnostic.line,
+                        diagnostic.startCol,
+                      );
+                      buffer.focusNode.requestFocus();
+                    },
                   );
-                  String sanitizedPath = path.substring(7);
-                  openBuffer(sanitizedPath);
-                  buffers.forEach((b) {
-                    print("Buffer path: ${b.path}");
-                  });
-                  print("Sanitized path: $sanitizedPath");
-                  var buffer = buffers.firstWhere(
-                    (b) => b.path == sanitizedPath,
-                    orElse:
-                        () => Buffer(
-                          theme: theme,
-                          filetype: "unknown",
-                          initialLines: [],
-                          hgMgr: highlightGroups,
-                        ),
-                  );
-                  print("Buffer found: ${buffer.path}");
-                  buffer.viewport.revealPos(
-                    diagnostic.line,
-                    diagnostic.startCol,
-                  );
-                  buffer.setCursorPosition(
-                    diagnostic.line,
-                    diagnostic.startCol,
-                  );
-                  buffer.focusNode.requestFocus();
                 },
               );
             },
@@ -203,16 +214,16 @@ class Project {
       ),
     );
 
-    toolWindowManager.registerToolWindow(
-      "copilot",
-      ToolWindow(
-        name: "Copilot",
-        icon: Icon(Icons.chat_bubble),
-        content: SizedBox.expand(child: Container(color: Colors.green)),
-        anchor: Anchor.right,
-        isVisible: false,
-      ),
-    );
+    //toolWindowManager.registerToolWindow(
+    //  "copilot",
+    //  ToolWindow(
+    //    name: "Copilot",
+    //    icon: Icon(Icons.chat_bubble),
+    //    content: SizedBox.expand(child: Container(color: Colors.green)),
+    //    anchor: Anchor.right,
+    //    isVisible: false,
+    //  ),
+    //);
 
     //toolWindowManager.registerToolWindow(
     //  "undotree",
